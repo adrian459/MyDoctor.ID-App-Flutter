@@ -1,13 +1,45 @@
+
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mydoctor/homepage.dart';
 import 'package:mydoctor/register.dart';
-void main() {
-  runApp(LandingPage());
-}
+import 'package:mydoctor/splashscreen.dart';
+
+import 'main.dart';
+// void main() {
+//   runApp(LandingPage());
+// }
 
 class LandingPage extends StatelessWidget {
   //const MyApp({Key? key}) : super(key: key);
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
+  get context => null;
+  @override
+  void dispose(){
+    emailController.dispose();
+    passwordController.dispose();
+  }
+  Future signIn() async{
+    // //var context;
+    // showDialog(
+    //   //context: context, 
+    //   barrierDismissible: false,
+    //   builder: (context) => Center(child: CircularProgressIndicator(),)
+    // );
+    try{
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim()
+      );
+    } on FirebaseAuthException catch (e){
+      print(e);
+    }
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+    //Navigator.push(context, MaterialPageRoute(builder: (context)=>SplashScreen2()));
+  }
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -31,10 +63,11 @@ class LandingPage extends StatelessWidget {
               height: 50,
               width: 350,
               child: TextField(
+                controller: emailController,
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
-                  icon: Icon(Icons.book, color: Colors.black),
-                  hintText: 'username',
+                  icon: Icon(Icons.mail, color: Colors.black),
+                  hintText: 'email',
                   border: InputBorder.none
                 ),
               )
@@ -47,6 +80,7 @@ class LandingPage extends StatelessWidget {
               height: 50,
               width: 350,
               child: TextField(
+                controller: passwordController,
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
                   icon: Icon(Icons.lock, color: Colors.black),
@@ -64,9 +98,7 @@ class LandingPage extends StatelessWidget {
                   primary: Colors.redAccent, // background
                   onPrimary: Colors.white, // foreground                  
                 ),
-                onPressed: () { 
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-                },
+                onPressed: signIn,
                 child: Text('    Login    '),
               ),              
               Text('          ')
